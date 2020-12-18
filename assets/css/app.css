@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.copied::before {
+  content: "Copied!";
+  color: #fff;
+  position: absolute;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+
+.copied {
+  background: #649949;
+  color: transparent;
+}

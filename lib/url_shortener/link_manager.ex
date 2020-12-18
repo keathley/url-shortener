@@ -16,12 +16,13 @@ defmodule UrlShortener.LinkManager do
   def create_link(url) when is_binary(url) do
     code      = generate_short_code(url)
     changeset = Link.changeset(%{original_url: url, code: code})
+    upsert_link(changeset)
+  end
 
-    with {:ok, link} <- upsert_link(changeset) do
-      base_url  = UrlShortener.Config.get([:url_shortener, :base_url])
-      short_url = URI.merge(base_url, link.code)
-      {:ok, URI.to_string(short_url)}
-    end
+  def build_short_url(code) do
+    base_url  = UrlShortener.Config.get([:url_shortener, :base_url])
+    short_url = URI.merge(base_url, code)
+    URI.to_string(short_url)
   end
 
   def find_original_by_code(code) when is_binary(code) do

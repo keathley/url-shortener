@@ -18,6 +18,7 @@ defmodule UrlShortenerWeb.Router do
 
     get "/", LinkController, :new
     get "/:code", LinkController, :show
+    get "/preview/:code", LinkController, :preview
     post "/", LinkController, :create
   end
 end

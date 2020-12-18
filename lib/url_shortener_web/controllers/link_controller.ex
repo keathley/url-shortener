@@ -8,10 +8,21 @@ defmodule UrlShortenerWeb.LinkController do
     render(conn, :new, %{url: nil, short_url: nil})
   end
 
+  def preview(conn, %{"code" => code}) do
+    case LinkManager.find_original_by_code(code) do
+      {:ok, original_url} ->
+        short_url = LinkManager.build_short_url(code)
+        render(conn, :new, %{url: original_url, short_url: short_url})
+
+      {:error, _} ->
+        Conn.send_resp(conn, 404, "Not Found")
+    end
+  end
+
   def create(conn, %{"url" => url}) do
     case LinkManager.create_link(url) do
-      {:ok, short_url} ->
-        render(conn, :new, %{url: url, short_url: short_url})
+      {:ok, link} ->
+        redirect(conn, to: Routes.link_path(conn, :preview, link.code))
 
       {:error, error} ->
         raise error

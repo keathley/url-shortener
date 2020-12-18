@@ -6,6 +6,7 @@ defmodule UrlShortener.Application do
   def start(_type, _args) do
     children = [
       {UrlShortener.Repo, []},
+      {Phoenix.PubSub, name: UrlShortener.PubSub},
       UrlShortenerWeb.Endpoint,
     ]
 

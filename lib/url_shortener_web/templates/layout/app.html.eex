@@ -11,10 +11,23 @@
   <body>
     <header>
     </header>
-    <main role="main" class="container">
+    <main role="main" class="">
       <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
       <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
-      <%= @inner_content %>
+      <div class="flex">
+        <div class="w-full mx-auto mt-10 px-4 sm:mt-12 sm:px-6 lg:mt-20 lg:px-9 xl:mt-28">
+          <div class="sm:text-center lg:text-center">
+            <h1 class="text-center text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
+              URL Shortener
+            </h1>
+          </div>
+        </div>
+      </div>
+      <div class="flex mt-10">
+        <div class="w-full mx-auto max-w-4xl">
+          <%= @inner_content %>
+        </div>
+      </div>
     </main>
   </body>
 </html>
