@@ -14,9 +14,11 @@ defmodule UrlShortener.LinkManager do
   import Ecto.Query
 
   def create_link(url) when is_binary(url) do
-    code      = generate_short_code(url)
-    changeset = Link.changeset(%{original_url: url, code: code})
-    upsert_link(changeset)
+    with {:ok, url} <- validate_url(url) do
+      code      = generate_short_code(url)
+      changeset = Link.changeset(%{original_url: url, code: code})
+      upsert_link(changeset)
+    end
   end
 
   def build_short_url(code) do
@@ -74,4 +76,23 @@ defmodule UrlShortener.LinkManager do
   defp hash(str), do: :crypto.hash(:sha256, str)
 
   defp pack_bitstring(int), do: << int :: big-unsigned-32 >>
+
+  defp validate_url(url) do
+    case URI.parse(url) do
+      %URI{scheme: nil} ->
+        {:error, :invalid}
+
+      %URI{host: nil} ->
+        {:error, :invalid}
+
+      %URI{host: host} ->
+          case :inet.gethostbyname(Kernel.to_charlist(host)) do
+            {:ok, _} ->
+              {:ok, url}
+
+            {:error, _} ->
+              {:error, :invalid}
+          end
+    end
+  end
 end

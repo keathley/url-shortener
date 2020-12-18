@@ -24,17 +24,21 @@ defmodule UrlShortenerWeb.LinkController do
       {:ok, link} ->
         redirect(conn, to: Routes.link_path(conn, :preview, link.code))
 
-      {:error, error} ->
-        raise error
+      {:error, :invalid} ->
+        conn
+        |> Conn.put_status(400)
+        |> put_flash(:error, "Invalid URL")
+        |> render(:new, %{url: url, short_url: nil})
+
+      {:error, _} ->
+        Conn.send_resp(conn, 503, "Error")
     end
   end
 
   def show(conn, %{"code" => code}) do
     case LinkManager.find_original_by_code(code) do
       {:ok, original_url} ->
-        conn
-        |> Conn.put_resp_header("location", original_url)
-        |> Conn.send_resp(302, original_url)
+        redirect(conn, external: original_url)
 
       {:error, _} ->
         Conn.send_resp(conn, 404, "Not Found")

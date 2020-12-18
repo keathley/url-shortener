@@ -1,12 +1,26 @@
 version: '3'
 
 services:
+  app:
+    build: .
+    volumes:
+      - .:/app
+    ports:
+      - "4000:4000"
+    environment:
+      - BASE_URL=http://localhost:4000
+      - DB_URL=postgres://postgres:postgres@postgres/url_shortener_dev
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:11.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-
-  redis:
-    image: redis:6.0
-    ports:
-      - "6379:6379"

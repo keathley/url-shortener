@@ -38,12 +38,13 @@ defmodule UrlShortener.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:phoenix, "~> 1.5.7"},
+      {:phoenix_ecto, "~> 4.2"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:plug_cowboy, "~> 2.0"},
       {:postgrex, ">= 0.0.0"},
-      {:redix, "~> 1.0"},
       {:vapor, "~> 0.10.0"},
+      {:wallaby, "~> 0.28", runtime: false, only: [:dev, :test]}
     ]
   end
 
@@ -57,6 +58,7 @@ defmodule UrlShortener.MixProject do
     [
       setup: ["deps.get", "cmd npm install --prefix assets"],
       "ecto.setup": ["ecto.create", "ecto.migrate"],
+      test: ["ecto.setup", "test"]
     ]
   end
 end

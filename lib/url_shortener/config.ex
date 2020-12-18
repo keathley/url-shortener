@@ -1,4 +1,7 @@
 defmodule UrlShortener.Config do
+  @moduledoc """
+  Defines common runtime configuration.
+  """
   use Vapor.Planner
 
   dotenv()

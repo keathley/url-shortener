@@ -4,7 +4,7 @@
 <% end %>
 <%= if @short_url do %>
   <div data-short-link-container class="flex mx-8 border-b-2 pb-1">
-    <a href="<%= @short_url %>" class="flex-1 self-end text-normal text-blue-500 font-light">
+    <a href="<%= @short_url %>" class="short-url flex-1 self-end text-normal text-blue-500 font-light">
       <%= @short_url %>
     </a>
     <button data-copy-link="<%= @short_url %>" class="relative bg-blue-100 hover:bg-blue-200 text-blue-500 text-normal align-right py-1 px-8 rounded focus:outline-none focus:shadow-outline transition-background duration-300">

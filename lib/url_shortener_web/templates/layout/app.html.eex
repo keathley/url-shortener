@@ -12,8 +12,13 @@
     <header>
     </header>
     <main role="main" class="">
-      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
-      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <%= if get_flash(@conn, :error) do %>
+        <div class="mx-auto pt-10 px-4 max-w-4xl">
+          <p class="alert alert-danger bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <%= get_flash(@conn, :error) %>
+          </p>
+        </div>
+      <% end %>
       <div class="flex">
         <div class="w-full mx-auto mt-10 px-4 sm:mt-12 sm:px-6 lg:mt-20 lg:px-9 xl:mt-28">
           <div class="sm:text-center lg:text-center">

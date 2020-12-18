@@ -32,6 +32,7 @@ defmodule UrlShortenerWeb.ConnCase do
   end
 
   setup _tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(UrlShortener.Repo)
     {:ok, conn: Phoenix.ConnTest.build_conn()}
   end
 end
