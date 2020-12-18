@@ -1,9 +1,15 @@
 version: '3'
 
+volumes:
+  node_modules:
+  build:
+
 services:
   app:
     build: .
     volumes:
+      - node_modules:/app/assets/node_modules
+      - build:/app/_build
       - .:/app
     ports:
       - "4000:4000"
