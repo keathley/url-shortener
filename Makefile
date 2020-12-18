@@ -8,6 +8,7 @@
 # for the first time
 setup:
 	docker-compose build
+	docker-compose run --rm --no-deps app mix deps.get
 	docker-compose run --rm app mix ecto.setup
 
 # `make server` will be used after `make setup` in order to start
