@@ -24,6 +24,9 @@ make server
 make test
 ```
 
+Once you're running the server locally you can navigate to http://localhost:4000
+in your browser to view the running site.
+
 ## Design Notes
 
 This is a basic elixir application. I'm not using any of the advanced features
