@@ -1,9 +1,8 @@
-version: '3'
+version: '3.9'
 
 volumes:
   node_modules:
   build:
-
 services:
   app:
     build: .
@@ -15,18 +14,18 @@ services:
       - "4000:4000"
     environment:
       - BASE_URL=http://localhost:4000
-      - DB_URL=postgres://postgres:postgres@postgres/url_shortener_dev
+      - DB_URL=postgres://postgres:postgres@db/url_shortener_dev
     depends_on:
-      - postgres
+      - db
 
-  postgres:
-    image: postgres:11.2
+  db:
+    image: postgres:13.1-alpine
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      PGDATA: /var/lib/postgresql/data/pgdata
-    restart: always
-    volumes:
-      - ./pgdata:/var/lib/postgresql/data
+    #   PGDATA: /var/lib/postgresql/data/pgdata
+    # restart: always
+    # volumes:
+    #   - ./pgdata:/var/lib/postgresql/data
     ports:
       - "5432:5432"

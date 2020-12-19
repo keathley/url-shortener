@@ -8,7 +8,9 @@
 # for the first time
 setup:
 	docker-compose build
+	docker-compose up -d db
 	docker-compose run --rm --no-deps app mix deps.get
+	docker-compose run --rm app sh -c './priv/wait-for-it.sh db:5432'
 	docker-compose run --rm app mix ecto.setup
 
 # `make server` will be used after `make setup` in order to start
@@ -20,4 +22,5 @@ server:
 # `make test` will be used after `make setup` in order to run
 # your test suite.
 test:
-	docker-compose run --rm -e MIX_ENV=test -e DB_URL=postgres://postgres:postgres@postgres/url_shortener_test app mix test
+	docker-compose run --rm -e MIX_ENV=test -e DB_URL=postgres://postgres:postgres@db/url_shortener_test app mix test
+
