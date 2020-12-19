@@ -1,34 +1,62 @@
-# STORD URL Shortener Exercise
-The goal of this exercise is to create a URL shortener web application in the same vein as [bitly](https://bitly.com/), [TinyURL](https://tinyurl.com/), or the now defunct [Google URL Shortener](https://goo.gl/). It is intentionally open-ended and you are welcome to implement your solution using the language and tech stack of your choice, but the core functionality of the application should be expressed through your own original code. This is your opportunity to show off your design and development strengths to our engineering team.
+# URL Shortener
 
-## Application Requirements
+This is an example URL shortener written in elixir.
 
-- When navigating to the root path (e.g. `http://localhost:8080/`) of the app in a browser a user should be presented with a form that allows them to paste in a (presumably long) URL (e.g. `https://www.google.com/search?q=url+shortener&oq=google+u&aqs=chrome.0.69i59j69i60l3j0j69i57.1069j0j7&sourceid=chrome&ie=UTF-8`).
-- When a user submits the form they should be presented with a simplified URL of the form `http://{domain}/{slug}` (e.g. `http://localhost:8080/h40Xg2`). The format and method of generation of the slug is up to your discretion.
-- When a user navigates to a shortened URL that they have been provided by the app (e.g. `http://localhost:8080/h40Xg2`) they should be redirected to the original URL that yielded that short URL (e.g `https://www.google.com/search?q=url+shortener&oq=google+u&aqs=chrome.0.69i59j69i60l3j0j69i57.1069j0j7&sourceid=chrome&ie=UTF-8`).
+## Tech Stack
 
+* Elixir 1.11.2
+* Erlang 23
+* Postgres 13
+* Tailwind CSS
 
-## Deliverable
+## Running locally
 
-- Fork or clone this repository
-- Implement your solution, including test cases for your application code. 
-- We will execute your code using the `make` targets specified in `Makefile`. Edit the contents of `Makefile` to provide an interface for running and testing your application.
-- Include any other notes for our engineering team that you would like regarding your approach, assumptions you have made, how to run your code, how to use your application, etc in a file named `notes.txt`.
-- E-mail the point of contact that sent you this exercise. 
-  * Include the `Makefile` and
-  * A link to a public GitHub or GitLab repository. Note: if your github account is monitored, then create a new github account
+I'm using docker and Make for development:
 
-## Evaluation
-Your submission will be evaluated along the following criteria by the Reviewer
-- Completeness - Does your submission meet the Application Requirements and Deliverables specified above?
-- Testing - evaluate your use of test coverage to allow for iterative development
-- Ease of setup - how easy was it for the Reviewer to setup and run your app
-- Front end design - what is your familiarity with html, css, and front-end javascript frameworks; how thoroughly did you consider the User Experience for this application?
-- Technical design - separation of concerns, adherence to certain 12 factor App principles, knowledge of backend frameworks, security concerns, etc.
--- Note on the Database-  We would like you to use a persistent datastore. Please be ready to speak to your choices here.
-### Notes:  
-- The hope is that this exercise will take a qualified candidate 2-4 hours.  Please let us know how much time you spent so that we can iterate based on your feedback.  
-- The good news is that we will not subject you to a code exercise on a whiteboard when you are on-site!
-- You can use any language because we are looking for your strengths as an engineer, more so than your strengths with any particularly technology.  Please show us your strengths for coding, testing, user experience, technical design, and attention to detail. 
-- Curious about the performance requirements for this exercise?  This should be able to handle at least 5 requests per second.  During the on-site interview, you can talk about how you might change your design if the system had to scale beyond that
-- Thank you for the time you are spending as a candidate with STORD!
+```
+# Set up environment
+make setup
+
+# Run server locally on port 4000
+make server
+
+# Run tests
+make test
+```
+
+## Design Notes
+
+This is a basic elixir application. I'm not using any of the advanced features
+of the runtime since this is supposed to be a quick example application. The idea
+is to accept a URL, hash the URL using a deterministic hashing scheme, and then
+use the hash as the short code for lookups. We store the short code plus the original
+url in Postgres.
+
+The hashing scheme is straightforward. I opted to use a deterministic scheme because
+it means that each node in the cluster will arrive at the same short code without
+coordination. This makes caching operations much easier in the future.
+
+The hashing scheme algorithm is straightforward. We generate the sha256 of the original url.
+This provides us a hex value. We then convert that hex value into an integer.
+Once we have the integer we can pack that as a binary and base64 encode the binary (stripping off 
+the trailing `==`). This gives us a short set of characters to use as a key.
+
+Postgres is an interesting choice as a primary datastore. Its not the highest
+performance option for these operations, at least compared to something like
+Redis. But the benefit over something like Redis is additional durability.
+In a vacuum, I prefer a boring and reliable solution. Postgres checks both of
+those boxes. A slightly more optimized solution would be to cache urls in a fast
+datastore such as Redis with a limited TTL. The TTL and general caching scheme
+would need to be determined by access patterns (how soon do users access short
+links after they're created, how long does a short link tend to live, etc.).
+
+If we wanted to further optimize for performance than utilize in-memory caching
+with ETS tables. These tables could be populated by distributing links across
+the cluster. The exact distribution scheme would again depend on access patterns.
+There are several options that I've used in the past. If the total number of short
+links was relatively low it might be possible to fully replicate all links across
+the cluster, allowing each node to perform a lookup without needing to make any
+trips across the network. If the number of links was larger than available memory,
+we could distribute the links across the cluster using consistent hashing. These
+solutions are complex and would need to be driven by data and more refined requirements.
+
