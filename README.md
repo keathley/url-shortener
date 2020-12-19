@@ -51,7 +51,7 @@ In a vacuum, I prefer a boring and reliable solution. Postgres checks both of
 those boxes. A slightly more optimized solution would be to cache urls in a fast
 datastore such as Redis with a limited TTL. The TTL and general caching scheme
 would need to be determined by access patterns (how soon do users access short
-links after they're created, how long does a short link tend to live, etc.).
+links after they are created, how long does a short link tend to live, etc.).
 
 If we wanted to further optimize for performance than utilize in-memory caching
 with ETS tables. These tables could be populated by distributing links across
